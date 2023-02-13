@@ -92,6 +92,7 @@ def get_categories():
         name = category.text.replace(' ', '').replace('\n', '')
         category_info = [name, full_link]
         categories_info.append(category_info)
+
         try:
             os.makedirs(f"books-data/{name}/images", exist_ok=True)
         except OSError as errors:
@@ -101,15 +102,20 @@ def get_categories():
 
 
 categories_elm = get_categories()
+book_count = 0
 for category_name, category_url in categories_elm:
     books_info = []
     book_urls = get_category_books(category_url)
     for x in book_urls:
         book_info = get_book_info(x)
         books_info.append(book_info)
+        book_count += 1
+        print(f'{book_count}/1000 books completed')
     with open(f"./books-data/{category_name}/{category_name}.csv", 'w', encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=['title', 'upc', 'price_including_tax', 'price_excluding_tax',
                                                'number_available', 'product_description', 'category', 'review_rating',
                                                'image_url', 'product_page_url'])
         writer.writeheader()
         writer.writerows(books_info)
+    print(f'{category_name} category completed')
+print('------------------Scraping completed------------------')
